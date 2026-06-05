@@ -58,7 +58,7 @@ The system consists of three primary components:
 3. **WiFi Network** Facilitates transfer of data
 4. **Client** Receives, formats, and stores data
 
-![ESP32 Datalogger System Architecture](/images/projects/01_datalogger/SystemArchitecture.png)
+![ESP32 Datalogger System Architecture](/images/projects/01_Datalogger/SystemArchitecture.png)
 
 *Figure 1. High-level system architecture showing sensor acquisition, wireless transmission, and desktop data logging workflow.*
 
@@ -103,14 +103,14 @@ The system consists of three primary components:
 
 The ESP32 firmware executes the following sequence:
 
-![ESP32 Datalogger Firmware Architecture](/images/projects/01_datalogger/FirmwareArchitecture.png)
+![ESP32 Datalogger Firmware Architecture](/images/projects/01_Datalogger/FirmwareArchitecture.png)
 
 *Figure 2. High-level Firmware architecture showing I2C connections, ESP32 setup and continuous behavior, and python script flow.*
 
 
 **Sensor Acquisition**
 
-Sensor communication is performed over the I2C with each sensor having a unique hardware address.
+Sensor communication is performed over I2C with each sensor having a unique hardware address.
 
 The firmware continuously gathers from:
 
