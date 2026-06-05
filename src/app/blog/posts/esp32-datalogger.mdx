@@ -1,0 +1,284 @@
+---
+title: "ESP32 Wireless Datalogger"
+subtitle: "ESP32 based wireless telemetry and datalogging system"
+summary: "A wireless telemetry and datalogging system built around an ESP32-WROVER-E, designed to collect motion and environmental data and stream it to a laptop for analysis and storage."
+image: "/images/projects/01_Datalogger/WiringOverview.jpeg"
+publishedAt: "2025-10-01"
+tag: ["Firmware Development, ", "Embedded Systems"]
+---
+
+A wireless telemetry and datalogging system built around an ESP32-WROVER-E, designed to collect motion and environmental data and stream it to a laptop for analysis and storage.
+
+> **Status:** Functional Prototype  
+> **Role:** Hardware Design, Firmware Development, Networking, Data Processing  
+> **Technologies:** ESP32, C++, Arduino IDE, Python, TCP/IP Networking, MPU6050, BMP280
+
+---
+
+## Project Summary
+
+This project was originally developed as a lightweight flight datalogger for an RC aircraft being built by a friend. The objective was to collect motion and environmental data during flight and store it for post-flight analysis.
+
+The system uses an ESP32-WROVER-E microcontroller to collect data from an MPU6050 inertial measurement unit and a BMP280 environmental sensor. Sensor readings are processed onboard, formatted into telemetry packets, and transmitted wirelessly over WiFi to a laptop. A custom Python application receives the incoming data stream and automatically saves the results to timestamped CSV files for later analysis.
+
+Although the RC aircraft project was ultimately discontinued, the datalogger itself was successfully developed into a working prototype and demonstrated the complete data acquisition pipeline from sensor collection through data storage.
+
+---
+
+## Key Accomplishments
+
+- Integrated multiple I2C sensors into a single embedded system
+- Developed firmware for real-time data acquisition and processing
+- Calibrated and validated sensor measurements
+- Created a wireless TCP-based telemetry system
+- Developed a Python application for automated data logging
+- Implemented timestamped file generation for data organization
+- Debugged hardware, firmware, and networking issues across the complete system
+
+---
+
+## Design Requirements
+
+The original design goals were:
+
+- Use inexpensive and readily available hardware
+- Collect acceleration and rotational data to determine heading
+- Measure atmospheric pressure and altitude data to determine location
+- Transmit data wirelessly
+- Store data for later analysis
+
+---
+
+## System Architecture
+
+The system consists of three primary components:
+
+1. **Embedded Sensors** Collects the raw data
+2. **Microcontroller** Calculating, formats, and sends desired data
+3. **WiFi Network** Facilitates transfer of data
+4. **Client** Receives, formats, and stores data
+
+![ESP32 Datalogger System Architecture](/images/projects/01_datalogger/SystemArchitecture.png)
+
+*Figure 1. High-level system architecture showing sensor acquisition, wireless transmission, and desktop data logging workflow.*
+
+**Data Flow**
+
+1. Sensors collect motion and environmental measurements.
+2. ESP32 processes and formats telemetry data.
+3. Data is transmitted wirelessly through a TCP connection.
+4. Python application receives incoming packets.
+5. Data is stored and exported to timestamped CSV files.
+
+---
+
+## Hardware Design
+
+**ESP32-WROVER-E**
+
+- Integrated WiFi capability
+- Multiple I2C peripherals
+- Adequate processing performance
+- Low power consumption
+- Extensive development ecosystem 
+
+---
+
+**MPU6050**
+
+- 3-axis accelerometer
+- 3-axis gyroscope
+
+---
+
+**BMP280**
+
+- Atmospheric pressure
+- Temperature
+- Altitude
+
+---
+
+## Firmware Architecture
+
+The ESP32 firmware executes the following sequence:
+
+![ESP32 Datalogger Firmware Architecture](/images/projects/01_datalogger/FirmwareArchitecture.png)
+
+*Figure 2. High-level Firmware architecture showing I2C connections, ESP32 setup and continuous behavior, and python script flow.*
+
+
+**Sensor Acquisition**
+
+Sensor communication is performed over the I2C with each sensor having a unique hardware address.
+
+The firmware continuously gathers from:
+
+- **MPU6050:** Accelerometer, Gyroscope data
+- **BMP280:** Pressure, Altitute, Temperature data
+
+**Orientation Calculation**
+
+Roll, pitch, and yaw are calculated using accelerometer measurements and gyroscope integration.
+
+The `calculate_IMU_error()` function calculates the error in gyro and acceleration measurements due to drift. This value is used as an offset for the continually calculated values to minimize measurement drift. 
+
+**Telemetry Formatting**
+
+Sensor data is assembled into structured packets before transmission to allow simple parsing on the receiving system.
+
+Example packet:
+
+```text
+packetNumber,rssi,roll,pitch,yaw,altitude,pressure,temperature
+```
+
+---
+
+## Wireless Data Transmission
+
+Rather than storing data directly on the microcontroller, telemetry is streamed to a laptop in real time.
+
+**Network Topology**
+
+![ESP32 Datalogger Network Overview](/images/projects/01_datalogger/NetworkOverview.png)
+
+*Figure 3. Overview of connections via WiFi network.*
+
+
+**Benefits**
+
+- Real-time monitoring
+- Reduced embedded memory requirements
+- Simplified data retrieval
+
+---
+
+## Python Logging
+
+A custom Python application was developed to receive and store telemetry data.
+
+Responsibilities:
+
+- Open TCP connection
+- Receive incoming packets
+- Parse sensor values
+- Organize collected data
+- Generate CSV files
+- Apply automatic timestamps
+
+**Example Output**
+
+```text
+FlightLog_2025-09-28_15-42-17.csv
+```
+
+Timestamped filenames make it easy to identify and organize data from different test sessions.
+
+---
+
+## Problems Faced
+
+**IMU Calibration**
+
+Gyroscopes accumulate error over time when angular velocity is integrated into position estimates. Raw sensor measurements also contain bias and noise.
+
+To improve accuracy, average drift values are calculated at startup (while stationary), and used as offset values to improve long term orientation accuracy.
+
+---
+
+**Wireless Communication Reliability**
+
+Depending on the strength of the WiFi source, the connection can eventually drop between devices. WiFi strength (RSSI) was transmitted with every data package so users can determine viable operating ranges.
+
+---
+
+## Results
+
+The project validated the overall architecture and proved that a low-cost wireless flight datalogger could be implemented using readily available hardware.
+
+The completed prototype successfully demonstrated:
+
+- Wireless telemetry transmission
+- Real-time sensor acquisition
+- Orientation estimation
+- Environmental monitoring
+- Automated CSV generation
+- End-to-end data collection workflow
+
+---
+
+## Skills Demonstrated
+
+**Embedded Systems**
+
+- ESP32 Development
+- Firmware Architecture
+- Sensor Integration
+- Real-Time Data Acquisition
+- I2C Communication
+
+**Hardware**
+
+- Breadboard Prototyping
+- Sensor Interfacing
+- System Integration
+- Embedded Debugging
+
+**Software Development**
+
+- Python
+- Data Processing
+- CSV Generation
+- Data Logging Systems
+
+**Networking**
+
+- TCP/IP Communication
+- Wireless Telemetry
+- Client-Server Architecture
+
+**Engineering**
+
+- Sensor Calibration
+- Signal Processing
+- System Debugging
+- End-to-End Product Development
+
+---
+
+## Future Improvements
+
+If the project were continued beyond the prototype stage, the next steps would include:
+
+**Long-Term Hardware**
+
+- Design a custom PCB
+- Add proper power regulation
+- Improve vibration resistance
+- Reduce overall size and weight
+
+**Redundant Data Storage**
+
+- Add onboard SD card logging
+- Implement local buffering during network outages
+
+**Extended Software Applications**
+
+- Create real-time visualization tools
+- Develop live telemetry dashboards
+- Add automated flight analysis
+
+**Professional Productization**
+
+- Design a dedicated enclosure
+- Add aircraft mounting hardware
+- Improve environmental robustness
+
+---
+
+## Takeaways
+
+This project provided hands-on experience developing a complete embedded data acquisition system from concept to implementation. It reinforced the importance of system-level thinking and demonstrated how hardware, firmware, networking, and software must work together to create a reliable engineering solution.
+
+While the project remained at the prototype stage, it successfully achieved its primary technical objectives and served as a valuable exercise in embedded systems design, wireless communication, and sensor integration.
