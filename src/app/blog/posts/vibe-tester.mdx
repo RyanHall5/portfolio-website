@@ -1,0 +1,354 @@
+---
+title: "PCB Vibration Tester"
+subtitle: "ESP32-based vibration testing platform for PCB durability evaluation"
+summary: "A standalone vibration testing system built around an ESP32-WROOM that generates programmable frequency sweeps through a speaker-driven platform, allowing printed circuit boards to be exposed to controlled vibration profiles."
+image: "/images/projects/02_VibeTester/OverviewImage.jpg"
+publishedAt: "2026-12-10"
+tag: ["Firmware Development, ", "Electronics Design, ", "Embedded Systems"]
+---
+
+An ESP32 driven PCB vibration testing platform with 20x4 LCD output and 4x4 Membrane keypad input. Designed to expose PCBs to wide ranges of vibration scenarios for durability and reliability testing.
+
+> **Status:** Complete and Operational  
+> **Role:** Firmware Development, Electronics Integration, Embedded UI Development, System Testing  
+> **Technologies:** ESP32, C++, Arduino IDE, DAC, I2C, LCD Interface, Matrix Keypad
+
+---
+
+## Project Summary
+
+The objective of this project was to develop a low-cost vibration testing system for RIT Racing to evaluate the durability of custom PCBs used in their Formula Student vehicle. The system simulates the high-frequency vibrations and mechanical stresses experienced during high-speed driving and aggressive cornering in competition.
+
+This was a group project, with my contributions focused on the entire electronics stack, including firmware development, hardware design, soldering, and system integration. The system uses an ESP32 to generate programmable sine-wave signals through its DAC, which are conditioned and used to drive a speaker-based vibration platform. A built-in LCD and keypad interface enables fully standalone configuration and automated frequency sweep testing.
+
+---
+
+## Contributions
+
+**Me**
+
+- ESP32 firmware
+- LCD + keypad integration and UI system
+- Frequency sweep generation logic
+- Circuitry soldering + wire routing
+- System testing and debugging
+
+**Team Members**
+
+- Electronics enclosure design, and 3D printing 
+- Mounting fixture design, and 3D printing
+- Analog signal filtering
+
+---
+
+## Key Accomplishments
+
+- Generated programmable sine wave outputs using the ESP32 DAC
+- Implemented configurable frequency sweep testing
+- Integrated LCD and keypad peripherals into a standalone system via multi-core programming
+- Developed a complete menu-driven embedded user interface
+- Developed parameter validation and user input handling
+- Integrated hardware and firmware into a complete testing platform
+- Debugged hardware, firmware, and system-level issues
+
+---
+
+## Design Requirements
+
+The primary design goals were:
+
+- Allow user-configurable testing parameters
+- Operate without requiring a host computer
+- Provide a simple and intuitive user interface
+- Remain low-cost and functional
+- Support automated frequency sweep testing
+- Allow quick setup and operation
+
+---
+
+## System Architecture
+
+The vibration tester consists of three primary subsystems:
+
+1. **UI Peripherals**: Determine what signal needs to be produced
+2. **Microcontroller**: Produces the signal + manages the UI 
+3. **Signal Chain**: Converts the signal to physical vibration
+
+![ESP32 Vibe Tester System Architecture](/images/projects/02_VibeTester/SystemArchitecture.jpg)
+
+*Figure 1. High-level system architecture showing input peripherals, ESP32 core tasks, and output signal chain*
+
+**System Operation**
+
+1. User enters testing parameters through the keypad.
+2. ESP32 processes input and updates configuration settings.
+3. Firmware generates a sine wave using the onboard DAC.
+4. Signal conditioning circuitry filters and adjusts the output signal.
+5. Speaker converts the electrical signal into mechanical vibration.
+6. PCB mounted to the test platform experiences controlled vibration.
+7. Frequency is automatically swept between configured limits.
+
+---
+
+## Hardware Design
+
+**ESP32-WROOM**
+
+- Integrated digital-to-analog converter (DAC)
+- Multi-core programming capability
+- Large GPIO count for keypad integration
+- Low cost and availability
+- Extensive development ecosystem
+
+---
+
+**20x4 I2C LCD**
+
+- Show configured settings + real-time status display
+- Guide user interaction
+- Low cost and availability
+
+---
+
+**Membrane Keypad**
+
+- Navigate system menus
+- Adjust frequency, sweep, duration, and step configurations
+- Start and stop tests
+
+---
+
+**Signal Conditioning Circuit**
+
+- Step-down voltage divider 
+- Filtering capacitor
+- More permanent/reliable than breadboard
+
+---
+
+**Speaker + Subwoofer**
+
+- Sufficient vibration strength
+- Readily available for use (spare/unused)
+
+---
+
+**Mechanical Components**
+
+- Physical protection for electronics
+- User access to controls and display
+- Secure mounting for test hardware
+- Removable platform for PCB attachment
+
+---
+
+## Firmware Architecture
+
+The firmware is responsible for user interaction, parameter storage, signal generation, and overall system control.
+
+![Firmware Architecture](/images/projects/02_VibeTester/FirmwareArchitecture.png)
+
+*Figure 2. High-level firmware architecture showing menu navigation, parameter configuration, and vibration control logic.*
+
+**Core 0**
+1. Refreshes the screen whenever the running state has changed
+2. Listens for key presses and navigates the menu accordingly
+3. Handles user input for configuring test parameters
+4. Starts and stops the vibration test based on user input
+
+**Core 1**
+1. Sits idle until the test is started
+2. Drives the speaker at the current frequency for a set duration
+3. Steps to the next frequency, bouncing back when the upper or lower limit is reached
+4. Signals Core 0 to update the display after each frequency change
+
+---
+
+**UI State Machine**
+
+The user interface is implemented using a state-machine architecture where each screen represents a unique state shown below.
+
+- Home Screen
+- Running Screen
+- Settings Configuration Screen
+- Input Screen
+
+User keypad inputs trigger transitions between states. Each screen includes notes for what buttons bring you to what pages. For example, when on the home screen, C will run the program, and D will bring you to the settings page as shown below. 
+
+![Firmware Architecture](/images/projects/02_VibeTester/LCDHomeScreen.png)
+
+*Figure 3. Default home screen configuration showing how navigation is made explicate to the user.*
+
+
+---
+
+### User Interface System
+
+The LCD interface allows users to configure and monitor the tester directly from the device.
+
+Features include:
+
+* Hierarchical menu navigation
+* Real-time parameter display
+* Context-sensitive input screens
+* Start and stop controls
+* Status feedback during operation
+
+The interface was designed to operate without requiring external software or a connected computer.
+
+---
+
+**Input Validation**
+
+User-entered values are validated before being accepted by the system.
+
+Validation includes:
+
+* Numeric input verification
+* Range checking
+* Frequency limit enforcement
+* Parameter consistency checks
+
+This prevents invalid operating conditions and improves overall system reliability.
+
+---
+
+**Frequency Sweep Generation**
+
+The vibration profile is generated by producing a sine wave through the ESP32 DAC.
+
+The waveform follows:
+
+```
+V(t) = AMPLITUDE * sin(2π * frequency * t) + VOLT_OFFSET
+```
+
+```t``` is the time in seconds with accuracy to the microsecond. 
+
+The frequency of the sine wave varies between the minimum and maximum frequency values provided in the configuration settings. The size of the ```step``` (Hz) between frequencies and the ```timePerFrequency``` (ms) are also provided in the configuration settings.
+
+---
+
+## Problems Faced
+
+**Balancing Signal Generation and User Interface Updates**
+
+Initially, all processes were executed in the main loop. Because of this, everytime the UI was updated to reflect the current status of the test, signal generation was delayed temporarily.
+
+This problem was solved implementing task seperation through multi-core programming. The main processing of each tasks was seperated to its own dedicated core, therefore making the overall execution of the firmware much more consistent.  
+
+---
+
+**DAC Resolution Limitations**
+
+The ESP32's onboard DAC provides limited 8-bit output resolution.
+
+The allowed voltage supplied to the speaker was much lower than the capacity of the ESP32, so  initially I had the min and max voltages set lower in the code so it could be directly fed to the speaker. 
+
+This introduced resolution issues, because of the 8-bit accuracy of the ESP32's DAC, by lowering the voltage range, I also unintentionally lowered the possible resolution of the waveform. 
+
+This problem was solved by using the full range of the ESP32's DAC (0-3.3V), and then stepping down + filtering that voltage using an external voltage divider and filter so that the speaker would receive safe voltage levels without degrading signal resolution.
+
+---
+
+**Hardware Integration**
+
+There was a lot debugging and design changes throughout this project since it was the first time I soldered, and lots of mistakes were made.
+
+- Using unreliable/weak wires led to many wires breaking resulting in de/resoldering
+- Cable management inside the electronics housing was initially very messy, unreliable, and bad for longevity.
+- An LCD screen's brightness ability broke entirely due to not being properly taken care of
+
+With time and the guidance/advice of other senior members of the electronics team, I was able to resolve all of these problems, and produce a reliable product, and learn a lot along the way.
+
+---
+
+## Results
+
+The completed prototype successfully demonstrated:
+
+* Standalone operation
+* Programmable frequency sweep generation
+* Embedded UI functionality
+* Real-time parameter configuration
+* Clean signal generation using the ESP32 DAC
+* Hardware and firmware integration
+* Controlled vibration testing of mounted PCBs
+
+The project validated the overall architecture and demonstrated that a low-cost vibration testing platform could be implemented using readily available hardware and embedded development tools.
+
+---
+
+## Skills Demonstrated
+
+**Embedded Systems**
+
+- ESP32 Development
+- Embedded C++
+- State Machine Design
+- Real-Time Programming Concepts
+- Firmware Development
+- Multi-core task division 
+
+**Electronics**
+
+- DAC Signal Generation and Resolution
+- Analog Signal Conditioning
+- Voltage Divider + Capacitive Filtering
+- Embedded Hardware Debugging
+- Oscilloscope for debugging and development
+
+**Firmware Development**
+
+- Embedded UI Design
+- Input Validation
+- Timing Control
+- Peripheral Integration
+- Multi-core programming
+
+**Engineering**
+
+- Prototype Development
+- System Integration
+- Technical Debugging
+- Design Tradeoff Analysis
+- Hardware/Software Co-Design
+- Engineering Collaboration
+
+---
+
+## Future Improvements
+
+If the project were continued from an operational to a product stage, future development could include:
+
+**Closed-Loop Vibration Measurement**
+
+- Add an accelerometer to the vibration platform
+- Measure actual vibration levels rather than inferred output
+- Implement vibration feedback control
+
+**Enhanced Test Profiles**
+
+- Allow imported frequency profiles from real vibration data
+- Support user-defined frequency profiles
+- Implement randomized vibration testing modes
+
+**Hardware Improvements**
+
+- Replace perfboard circuitry and ESP32-Wroom devkit with a lightweight custom PCB
+- Improve power efficiency and filtering
+
+**User Experience Enhancements**
+
+- Add graphical frequency visualization
+- Move from 20x4 LCD screen to higher resolution for more complex applications
+
+---
+
+## Takeaways
+
+This project provided hands-on experience developing a complete embedded test instrument from concept to implementation. It reinforced the importance of system-level thinking and demonstrated how firmware, electronics, user interfaces, and mechanical systems must work together to create a functional engineering product.
+
+The project also highlighted the challenges associated with real-time embedded systems, analog signal generation, and hardware/software integration. Developing a standalone vibration tester required balancing simplicity, functionality, and performance while working within the limitations of low-cost hardware.
+
+Most importantly, the project demonstrated the value of iterative prototyping and multidisciplinary collaboration when developing engineering systems.
