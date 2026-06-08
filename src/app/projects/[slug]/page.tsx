@@ -77,7 +77,7 @@ export default async function Projects({ params }: { params: Promise<{ slug: str
       <Row fillWidth horizontal="center">
         <Column as="section" maxWidth="m" horizontal="center" gap="l" paddingTop="24">
           <Schema
-            as="projectPosting"
+            as="techArticle"
             baseURL={baseURL}
             path={`${projects.path}/${post.slug}`}
             title={post.metadata.title}
