@@ -8,7 +8,8 @@ const person: Person = {
   role: "Computer Engineering Student",
   avatar: "/images/Hall_Ryan_compressed.jpg",
   email: "rhall4500@gmail.com",
-  location: "America/New_York", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+  timezone: "America/New_York", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+  location: "Rochester, NY\nRaynham, MA",
   languages: ["English"], // optional: Leave the array empty if you don't want to display languages
 };
 
@@ -143,11 +144,11 @@ const about: About = {
       {
         company: "Modern Metal Design + New England Carriage",
         timeframe: "2021 - Current",
-        role: "Office Student Worker",
+        role: "Metal Fabrication + Automotive Support Technician",
         achievements: [
-            "Maintained and enhanced the Honors Program website, developing new content and functionality while supporting existing web infrastructure.",
-            "Supported the operations of a program serving approximately 800 students through data management, administrative coordination, and process improvement initiatives.",
-            "Collaborated with students, faculty, advisors, and staff to organize events, manage communications, and improve the efficiency of program-wide workflows."
+            "Designed and manufactured custom metal products using CNC machinery, CAD software, and various fabrication processes including grinding, sanding, painting, and assembly.",
+            "Performed automotive repair and restoration tasks involving mechanical systems, electrical work, diagnostics, bodywork preparation, and finishing operations.",
+            "Worked across diverse project environments requiring technical troubleshooting, process efficiency, customer interaction, and coordination with multidisciplinary teams."
         ],
         images: [],
       },

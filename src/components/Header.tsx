@@ -73,7 +73,7 @@ export const Header = () => {
         }}
       >
         <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
-          {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
+          {display.location && <Row s={{ hide: false }}>{person.timezone}</Row>}
         </Row>
         <Row fillWidth horizontal="center">
           <Row
@@ -109,9 +109,9 @@ export const Header = () => {
                   </Row>
                 </>
               )}
-              {routes["/work"] && (
+              {routes["/work"] && ( //change below to true to add to header tab
                 <>
-                  <Row s={{ hide: true }}>
+                  <Row s={{ hide: false }}>
                     <ToggleButton
                       prefixIcon="grid"
                       href="/work"
@@ -184,7 +184,7 @@ export const Header = () => {
             gap="20"
           >
             <Flex s={{ hide: true }}>
-              {display.time && <TimeDisplay timeZone={person.location} />}
+              {display.time && <TimeDisplay timeZone={person.timezone} />}
             </Flex>
           </Flex>
         </Flex>
