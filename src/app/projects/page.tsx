@@ -17,7 +17,7 @@ export default function Projects() {
   return (
     <Column maxWidth="m" paddingTop="24">
       <Schema
-        as="projectPosting"
+        as="techArticle"
         baseURL={baseURL}
         title={projects.title}
         description={projects.description}
