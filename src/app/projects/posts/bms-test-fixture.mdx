@@ -1,0 +1,142 @@
+---
+title: "BMS Test Fixture PCB"
+subtitle: "Custom test fixture PCB for Battery Management System validation and troubleshooting"
+summary: "A custom PCB developed for RIT Racing to simplify battery management system validation, troubleshooting, and field testing through simulated cell voltages and temperature sensor inputs."
+image: "/images/projects/03_BMSTestFixture/3dLayout.png"
+publishedAt: "2026-04-01"
+tag: ["PCB Design"]
+---
+
+A custom PCB developed for RIT Racing to simplify battery management system validation, troubleshooting, and field testing through simulated cell voltages and temperature sensor inputs.
+
+> **Status:** Completed  
+> **Role:** Schematic Design, PCB Layout  
+> **Technologies:** Altium Designer Professional
+
+---
+
+## Project Summary
+
+This project was developed for the RIT Racing Formula SAE Electric team as a dedicated testing platform for the team's custom Battery Management System (BMS). While the BMS itself was designed by the team's firmware lead, a separate test fixture was needed to verify correct operation, accelerate troubleshooting, and simplify diagnostics during both development and competition events.
+
+The resulting PCB interfaces directly with the BMS through matching 20x2 pin headers and provides simulated battery cell voltages and temperature sensor inputs. By allowing engineers to easily access measurement points and adjust sensor values, the board enables quick validation of BMS functionality without requiring connection to a full battery pack.
+
+---
+
+## Design Requirements
+
+The test PCB was designed around several primary objectives:
+
+- Interface directly with the existing BMS hardware
+- Support a 27-cell battery pack
+- Support 6-thermistor setup
+- Provide accessible voltage measurement points
+- Enable rapid troubleshooting during competitions
+- Minimize setup time for validation testing
+- Maintain access to all adjustment and measurement points while connected to the BMS
+
+The board footprint was specifically arranged so that potentiometers and test points remained accessible when the BMS was installed on top of the fixture.
+
+---
+
+## Testing Strategy
+
+The BMS measures individual battery cell voltages through a series of cell sense connections. To simulate this behavior, the test fixture uses a resistor ladder consisting of twenty-seven equal-value resistors.
+
+When an external voltage source is applied across the divider chain, each node produces a predictable voltage step corresponding to an individual battery cell. These nodes are routed directly to the BMS cell sense inputs, allowing the system to interpret the divider as a simulated battery pack.
+
+Additional potentiometers were incorporated to provide more specific control to temperature sensors, enabling verification of the BMS temperature monitoring circuitry.
+
+This approach provided a simple and repeatable method of exercising the BMS without requiring access to a complete high-voltage battery assembly.
+
+---
+
+## Schematic Design
+
+The core of the design consists of a resistor divider network built from twenty-seven equal-value 1 kΩ resistors connected in series.
+
+![BMS Test PCB Schematic](/images/projects/03_BMSTestFixture/Schematic.png)
+
+*Figure 1. Schematic design showing the resistor ladder used to simulate battery cell voltages and potentiometer-based temperature sensor simulation circuitry.*
+
+
+Each divider node is exposed through both:
+
+- Dedicated test points for measurement
+- Direct connections to the BMS cell monitoring inputs
+
+An external supply can be connected across the divider chain, generating evenly distributed voltage levels across all simulated cells.
+
+Temperature monitoring channels are represented by adjustable potentiometers connected to the appropriate BMS inputs. These allow sensor values to be varied during testing to verify firmware response and fault handling behavior.
+
+---
+
+## PCB Layout
+
+The PCB was designed as a companion board that physically connects with the BMS through dual 20x2 header connectors.
+
+![BMS Test PCB Layout](/images/projects/03_BMSTestFixture/2dLayout.png)
+
+*Figure 2. PCB layout showing voltage test points, temperature simulation potentiometers, and connector placement used to interface directly with the BMS.*
+
+Special consideration was given to accessibility during testing. Since the BMS is installed directly above the test fixture, all potentiometers, power connections, and voltage test points were positioned outside the footprint of the BMS itself.
+
+This layout allows measurements and adjustments to be made without removing the BMS from the fixture.
+
+---
+
+## Challenges Encountered
+
+As one of my first projects developed using Altium Designer, a significant portion of the effort involved learning professional PCB design workflows while simultaneously meeting project requirements.
+
+Key challenges included:
+
+- Capturing and implementing another engineer's requirements
+- Routing a large number of cell sense signals within a compact layout
+- Ensuring all test points remained accessible after BMS installation
+- Learning schematic capture and PCB layout practices within Altium
+
+Although the circuitry itself was relatively straightforward, the project provided valuable experience in converting testing requirements into a manufacturable PCB design.
+
+---
+
+## Results
+
+The project successfully produced a dedicated testing platform for the RIT Racing BMS.
+
+The final design provided:
+
+- Simulated 27-cell battery inputs
+- Adjustable temperature sensor simulation
+- Direct custom BMS compatibility
+- Easily accessible measurement points
+- Simplified troubleshooting workflow
+- Improved competition readiness
+
+The board demonstrated how a relatively simple hardware fixture can significantly improve the efficiency of electronics validation and debugging.
+
+---
+
+## Skills Demonstrated
+
+**PCB Design**
+
+- Altium Designer
+- Schematic Drawing
+- PCB Layout
+- Component Placement
+- Design for Testability
+
+**Engineering**
+
+- Requirements Interpretation
+- Test Fixture Design
+- Design Documentation
+
+---
+
+## Takeaways
+
+This project provided practical experience designing a custom PCB for a real engineering customer within a multidisciplinary Formula SAE team. While the circuitry itself was intentionally simple, the project reinforced the importance of design-for-testability and demonstrated how dedicated validation hardware can dramatically improve development and troubleshooting workflows.
+
+As one of my first Altium projects, it also served as an introduction to professional PCB design practices, component placement considerations, and designing hardware around the needs of other engineers.
