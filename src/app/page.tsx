@@ -100,9 +100,16 @@ export default function Home() {
           </RevealFx>
         </Column>
       </Column>
-      <RevealFx translateY="16" delay={0.6}>
-        <Projects range={[1, 1]} />
-      </RevealFx>
+      <Column fillWidth gap="24" horizontal="center">
+        <RevealFx translateY="12" delay={0.5} fillWidth horizontal="center">
+          <Heading as="h2" variant="display-strong-m" align="center">
+            Featured Work
+          </Heading>
+        </RevealFx>
+        <RevealFx translateY="16" delay={0.6}>
+          <Projects range={[1, 1]} />
+        </RevealFx>
+      </Column>
       {routes["/blog"] && (
         <Column fillWidth gap="24" marginBottom="l">
           <Row fillWidth paddingRight="64">
