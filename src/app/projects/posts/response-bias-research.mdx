@@ -1,0 +1,89 @@
+---
+title: "Voluntary Response Bias Research"
+subtitle: "Measuring participation decay across social network depth"
+summary: "A social network experiment designed to observe how willingness to participate in a survey decays as respondents become more socially distant from the experiment's origin nodes."
+image: "/images/projects/05_ResponseDynamics/networksPosterFit.jpg"
+publishedAt: "2025-12-06"
+tag: ["Graph Theory, ", "Data Analysis"]
+---
+
+A social network experiment exploring how participation rates decline as survey recipients become increasingly removed from the original senders, demonstrating voluntary response bias in a real-world setting.
+ 
+> **Status:** Completed 
+> **Role:** Experiment Design, Graph Theory, Data Collection + Analysis + Visualization  
+> **Technologies:** Google Forms, Microsoft Excel, Flourish, Adobe Creative Cloud 
+ 
+---
+ 
+## Project Summary
+ 
+This project was designed to investigate voluntary response bias through a real-world social network experiment. Two origin nodes (the researchers) sent a Google Form to individuals they had spent over an hour with in a given day. Recipients were then asked to forward the form to people they had similarly spent over an hour with the following day, and so on across multiple rounds.
+ 
+The core hypothesis was that participation would decay with social distance — friends of the researchers would be motivated to respond out of personal connection, while individuals several degrees removed would feel little obligation and be far less likely to engage.
+ 
+---
+ 
+## Key Accomplishments
+ 
+- Designed and executed a multi-round chain-referral survey experiment
+- Mapped response data onto a network graph with node depth encoding
+- Quantified participation drop-off across network depth levels
+- Validated the hypothesis that voluntary response bias intensifies with social distance
+- Presented findings as a research poster
+---
+ 
+## Hypothesis
+ 
+Over **75%** of all responding participants would be contacted within the **first 3 rounds**, reflecting the drop-off in social obligation as distance from the origin nodes increases.
+ 
+---
+ 
+## Experiment Design
+ 
+**Process**
+ 
+Two origin participants (depth 1) each sent a Google Form to people they had interacted with for over an hour in a single day. Recipients were asked to fill out the form and share it the next day with their own daily contacts, creating a chain-referral structure across multiple depth levels.
+ 
+**Terms**
+ 
+- **Round / Depth:** The number of steps a form instance has traveled from the original senders. Depth 1 = the origin nodes; Depth 2 = their direct contacts; and so on.
+---
+ 
+## Results
+ 
+**Response Rate**
+ 
+Of the 14 responses collected, **85.71%** occurred within the first three rounds — confirming the hypothesis. The network ultimately reached **41 total individuals**, but an additional 27 named contacts chose not to respond.
+ 
+**Participation Decay**
+ 
+- Cumulative responses rose rapidly through the first three depth levels before growth flattened significantly.
+- Less than 20% of depth-4 group members responded.
+- No responses were received from any depth-5 participants.
+- Despite half of all nodes failing to extend the chain to the next level, the network still reached a notable breadth, demonstrating how quickly a referral structure can scale even with degraded compliance.
+
+**Network Visualization**
+ 
+The response network was mapped as a node-depth graph, with node color encoding depth level (1–5). The structure visually illustrates how the network broadens initially and then fragments as participation drops off at greater depths.
+ 
+---
+ 
+## Analysis
+ 
+**Voluntary Response Bias**
+ 
+This experiment directly demonstrates voluntary response bias: individuals who chose to respond were disproportionately those with a personal connection to the experiment's origin. As social distance increased, so did indifference, causing systematic underrepresentation of deeper network nodes.
+ 
+**Relative Respondent Statistics**
+ 
+Examining each depth group independently reinforces the trend:
+ 
+- Response rate per group drops sharply with depth
+- Total participant percentage rises briefly at depth 2–3 (as the network expands) before declining at depth 4–5 as participation collapses
+- The gap between total participants reached and total respondents widens at every successive depth level
+
+---
+ 
+## Takeaways
+ 
+This project provided a hands-on demonstration of a core statistical concept — voluntary response bias — in a naturally occurring social network. The results closely matched expectations: personal connection to a study's origin is a significant driver of participation, and that effect decays predictably with social distance. The experiment also illustrated how quickly a chain-referral design can scale in reach while simultaneously becoming harder to control in terms of response quality and completeness.
