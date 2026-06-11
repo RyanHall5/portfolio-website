@@ -1,0 +1,334 @@
+---
+title: "Self-Hosted Private Cloud Server"
+subtitle: "Linux-based personal cloud storage and remote access infrastructure"
+summary: "A self-hosted private cloud platform built on Ubuntu, Docker, Nextcloud, Cloudflare Tunnel, and Tailscale, providing secure remote file storage, backup, and media sharing capabilities."
+image: "/images/projects/06_HomeServer/HomeServerRedacted.png"
+publishedAt: "2026-06-10"
+tag: ["Linux Administration", "Networking", "Self-Hosting"]
+---
+
+A self-hosted private cloud platform built on Ubuntu, Docker, Nextcloud, Cloudflare Tunnel, and Tailscale, providing secure remote file storage, backup, and media sharing capabilities.
+
+> **Status:** Operational  
+> **Role:** System Administration, Infrastructure Design, Networking, Security Configuration  
+> **Technologies:** Linux, Ubuntu Server, OpenSSH, Docker, Nextcloud, Cloudflare Tunnel, Tailscale, Google Authenticator  
+
+---
+
+## Project Summary
+
+This project was developed to create a private cloud storage platform capable of securely storing, backing up, and sharing files without relying on subscription-based cloud storage providers.
+
+The system is hosted on a Dell OptiPlex 3060 Micro running Ubuntu and utilizes Docker containers to deploy and manage a Nextcloud instance. Secure remote access is provided through a Cloudflare Tunnel connected to a custom domain, while administrative access is performed through SSH over a private Tailscale VPN network with multi-factor authentication enabled.
+
+Beyond its practical use as a storage platform, the project served as an opportunity to gain hands-on experience with Linux administration, containerized services, networking, authentication systems, and self-hosted infrastructure deployment.
+
+---
+
+## Key Accomplishments
+
+- Installed and configured a dedicated Ubuntu server
+- Deployed Nextcloud using Docker containers
+- Implemented secure remote access through Cloudflare Tunnel
+- Configured SSH administration through Tailscale VPN
+- Added multi-factor authentication using Google Authenticator
+- Connected a custom domain to self-hosted infrastructure
+- Debugged operating system, networking, and authentication issues
+- Developed a complete self-hosted cloud storage solution
+
+---
+
+## Design Requirements
+
+The primary goals of the project were:
+
+- Provide large-scale personal storage without recurring cloud storage subscriptions
+- Allow secure remote access from anywhere
+- Support file sharing between users and devices
+- Simplify access for non-technical users
+- Create a platform for learning Linux administration and networking
+- Implement secure authentication and access controls
+- Utilize readily available hardware
+
+---
+
+## System Architecture
+
+The system consists of five primary components:
+
+1. **Ubuntu Server** Hosts all services
+2. **Docker Environment** Manages containerized applications
+3. **Nextcloud Container** Provides cloud storage functionality
+4. **Cloudflare Tunnel** Enables secure remote user access
+5. **Tailscale Network** Provides secure administrative access
+
+![Server Architecture](/images/projects/06_HomeServer/SystemArchitecture.png)
+
+*Figure 1. High-level architecture showing user access through Cloudflare Tunnel and administrative access through Tailscale VPN.*
+
+---
+
+## Hardware Platform
+
+**Dell OptiPlex 3060 Micro**
+
+The server hardware was selected because it provides low power consumption, compact size, and sufficient performance for personal cloud hosting applications.
+
+Key advantages include:
+
+- Small form factor
+- Low operating cost
+- Reliable x86 architecture
+- Upgradeable storage options
+- Gigabit Ethernet connectivity
+
+---
+
+**External Storage**
+
+A 14TB Western Digital external drive is connected to the server and serves as the primary storage location for user files and backups.
+
+Benefits include:
+
+- Availability (I had it spare)
+- Large storage capacity
+- Expandable storage architecture
+- Dedicated file repository separate from operating system storage
+
+---
+
+## Software Infrastructure
+
+**Ubuntu Server**
+
+Ubuntu serves as the operating system responsible for:
+
+- User management
+- Service management
+- Storage administration
+- Network configuration
+- Security controls
+
+The server was installed from a bootable USB drive created using Rufus after removing the pre-installed windows from the Optiplex
+
+---
+
+**Docker**
+
+Docker was selected to simplify deployment and maintenance of services.
+
+Containerization provides:
+
+- Simplified application deployment
+- Service isolation
+- Easier upgrades and maintenance
+- Reproducible configurations
+
+The Nextcloud environment operates within a dedicated Docker network that isolates application traffic from the host operating system.
+
+---
+
+**Nextcloud**
+
+Nextcloud provides the cloud storage interface used by end users.
+
+Core functionality includes:
+
+- File storage
+- File synchronization
+- Storage Partitioning
+- User account management
+- Web-based access
+- Mobile application support
+- File sharing
+
+Unlike commercial cloud providers, storage capacity is determined by the physical storage attached to the server.
+
+---
+
+## Secure Remote Access
+
+One of the primary design challenges was balancing security with ease of use.
+
+**Cloudflare Tunnel**
+
+Initial testing relied exclusively on Tailscale VPN access. While secure, this approach required every user to install and configure Tailscale before accessing files.
+
+To simplify access, a custom domain was purchased through Cloudflare and connected to the server using a Cloudflare Tunnel.
+
+Benefits include:
+
+- No port forwarding required
+- Simplified access for non-technical users
+- Encrypted connections
+- Reduced exposure of internal network infrastructure
+
+Users can now access the platform directly through a web browser using the configured domain name.
+
+---
+
+**Tailscale VPN**
+
+Administrative access remains restricted to a private Tailscale mesh network.
+
+Benefits include:
+
+- Private device-to-device connectivity
+- Secure SSH access
+- Simplified remote administration
+
+This architecture separates administrative traffic from public user traffic, improving overall system security.
+
+---
+
+**Multi-Factor Authentication**
+
+Google Authenticator was integrated into the SSH authentication workflow to improve server security.
+
+Authentication requires:
+
+1. Username
+2. Password
+3. Time-based authentication code
+
+This provides an additional security layer beyond password-only authentication.
+
+---
+
+## Problems Faced
+
+**Ubuntu Installation Issues**
+
+During initial deployment, Ubuntu installation repeatedly completed successfully but failed to boot afterward, resulting in a "No Bootable Device" error.
+
+After troubleshooting BIOS settings and installation media, the issue was traced to the USB port being used during installation. Moving the installation drive from a front-panel USB port to a rear motherboard-connected USB port resolved the problem and allowed Ubuntu to boot normally.
+
+---
+
+**SSH Authentication Lockout**
+
+While configuring Google Authenticator integration, SSH access was accidentally disabled due to an incorrect authentication configuration.
+
+Because remote access was no longer available, direct access to the server was required using a monitor, keyboard, and mouse.
+
+The issue was ultimately traced to authentication settings within the SSH configuration files. After restoring access and carefully reconfiguring the authentication workflow, multi-factor authentication was successfully implemented without disrupting SSH connectivity.
+
+---
+
+**Remote User Accessibility**
+
+The original architecture relied entirely on Tailscale VPN access for all users.
+
+Although secure, this created onboarding challenges for family members and non-technical users.
+
+The final solution utilized a Cloudflare Tunnel and custom domain, allowing users to connect directly through a web browser while retaining secure administrative access through Tailscale.
+
+---
+
+## Results
+
+The completed system successfully achieved its primary objectives and now functions as a private cloud storage platform accessible from both local and remote networks.
+
+The server currently provides:
+
+- Remote file storage
+- Device backups space
+- Cross-platform media sharing
+- Secure browser-based access
+- Private administrative access
+- Multi-factor authenticated SSH management
+- Expandable storage capacity
+
+The project also provided practical experience with Linux systems administration, containerized applications, networking, remote access technologies, and infrastructure security.
+
+---
+
+## Skills Demonstrated
+
+**Linux Administration**
+
+- Ubuntu Server Deployment
+- User Management
+- Service Configuration
+- Filesystem Administration
+- Command Line Operations
+
+**Networking**
+
+- DNS Configuration
+- Cloudflare Tunnel Deployment
+- VPN Configuration
+- Remote Access Architecture
+- Network Troubleshooting
+
+**Security**
+
+- Multi-Factor Authentication
+- Secure Remote Administration
+- VPN-Based Management
+
+**Infrastructure**
+
+- Docker Containerization
+- Service Deployment
+- Storage Management
+- Self-Hosted Applications
+- System Maintenance
+
+**Troubleshooting**
+
+- Operating System Installation
+- Authentication Debugging
+- Remote Access Configuration
+- Network Diagnostics
+- Infrastructure Recovery
+
+---
+
+## Future Improvements
+
+**Business File Storage**
+
+The current system is divided into personal, family, guest, business, and shared storage areas.
+
+Future expansion particularly for business may include:
+
+- CAD files
+- Product photos
+- Documentation
+- Marketing materials
+- Operational records
+
+This would provide centralized access to important business resources while maintaining separation from personal data.
+
+---
+
+**Storage Redundancy**
+
+The current implementation utilizes a single large storage device.
+
+Future improvements could include:
+
+- RAID storage configurations
+- Automated backups
+- Off-site backup replication
+- Drive health monitoring
+
+---
+
+**Additional Services**
+
+The server platform could be expanded to host additional self-hosted applications such as:
+
+- Internal documentation systems
+- Project management tools
+- Media servers
+- Development environments
+
+---
+
+## Takeaways
+
+This project provided practical experience deploying and maintaining a complete self-hosted infrastructure stack. It required combining Linux administration, containerization, networking, authentication systems, and security practices into a single operational platform.
+
+While the original objective was simply to create additional storage capacity, the project evolved into a broader exercise in systems administration and infrastructure engineering. The completed server now serves as both a useful everyday tool and a platform for continued experimentation with self-hosted technologies.
