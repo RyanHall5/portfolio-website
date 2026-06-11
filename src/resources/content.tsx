@@ -9,7 +9,7 @@ const person: Person = {
   avatar: "/images/Hall_Ryan_compressed.jpg",
   email: "rhall4500@gmail.com",
   timezone: "America/New_York", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  location: "Rochester, NY\nRaynham, MA",
+  location: "Rochester, NY | Raynham, MA",
   languages: ["English"], // optional: Leave the array empty if you don't want to display languages
 };
 
