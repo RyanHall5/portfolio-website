@@ -1,6 +1,6 @@
 # Ryan Hall's Portfolio (Magic Portfolio Template)
 
-![Ryan's Portfolio](public/images/PortfolioAboutPage.png)
+![Ryan's Portfolio](public/images/og/PortfolioAboutPage.png)
 
 This Portfolio page is adapted from the Magic Portfolio Template. Magic Portfolio is a simple, clean, beginner-friendly portfolio template. It supports an MDX-based content system for projects and blog posts, an about / CV page and a gallery.
 
