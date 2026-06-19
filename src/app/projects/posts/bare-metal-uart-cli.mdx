@@ -1,0 +1,266 @@
+---
+title: "Bare-Metal UART CLI"
+subtitle: "Register-level USART driver and command-line interface for the STM32F446RE"
+summary: "A bare-metal command-line interface built on the STM32F446RE Nucleo, featuring a hand-configured USART1 peripheral, interrupt-driven receive with a ring buffer, and runtime baud rate switching with no HAL, and no Arduino libraries."
+image: "/images/projects/07_BareMetalUART/WiringOverview.jpeg"
+publishedAt: "2026-06-19"
+tag: ["C, Firmware, STM32"]
+---
+
+A bare-metal command-line interface built on the STM32F446RE Nucleo, featuring a hand-configured USART1 peripheral, interrupt-driven receive with a ring buffer, and runtime baud rate switching. No HAL or Arduino libraries were used.
+
+> **Status:** Functional Prototype  
+> **Role:** Firmware Development, Hardware Debugging  
+> **Technologies:** C, STM32F446RE, Bare-Metal Register Programming, ARM Cortex-M4, PuTTY, Logic Analyzer (PulseView/Sigrok)
+
+---
+
+## Project Summary
+
+This project was built to develop a real, register-level understanding of how UART communication works on a microcontroller — not the abstracted version provided by Arduino's `Serial` library or ST's HAL, but the actual peripheral configuration underneath it.
+
+The system uses an STM32F446RE Nucleo board to implement USART1 entirely from scratch: clock gating, GPIO alternate function selection, baud rate divisor calculation, and status flag polling are all handled by directly reading and writing peripheral registers. On top of that foundation, the project layers an interrupt-driven receive pipeline with a ring buffer, and a small command-line interface that lets a user control onboard hardware and inspect system state over a serial terminal.
+
+What started as a basic echo-loop exercise was deliberately extended into a debug console to give the project enough depth to demonstrate multiple core embedded concepts.
+
+---
+
+## Key Accomplishments
+
+- Configured a UART peripheral entirely at the register level, with no HAL or abstraction layer
+- Implemented interrupt-driven receive using a custom ring buffer (producer/consumer pattern)
+- Built a command-line parser supporting multiple commands with argument validation and handling
+- Implemented runtime baud rate switching, while watching the Transmission Complete flag to avoid corrupting data
+- Added input validation to harden command parsing against malformed input
+- Used a logic analyzer to visualize UART framing at the bit level, including a deliberately induced baud rate mismatch
+- Debugged multiple real hardware and software issues independently, including ISR flag handling, buffer corruption, and terminal control-character mismatches
+
+---
+
+## Design Requirements
+
+The original design goals were:
+
+- Avoid HAL or Arduino-style libraries by manually configuring peripherals
+- Compare polling and interrupt-driven I/O options
+- Learn the basics by building something more substantial than a simple echo loop
+- Visually verify the UART signal at the electrical level
+
+---
+
+## System Architecture
+
+The system consists of three primary components:
+
+1. **USART1 Peripheral** — Hardware peripheral handling serial transmission and reception
+2. **Interrupt & Ring Buffer Layer** — Captures incoming bytes asynchronously and queues them for processing
+3. **CLI Layer** — Parses queued bytes into commands and dispatches them to hardware control functions
+
+![Bare-Metal UART CLI System Architecture](/images/projects/07_BareMetalUART/SystemArchitecture.png)
+
+*Figure 1. High-level system architecture showing the path from incoming UART bytes through the interrupt handler, ring buffer, and CLI parser to command execution.*
+
+**Data Flow**
+
+1. A byte arrives on PA10 (RX) and triggers a hardware interrupt.
+2. The ISR reads the byte from the USART data register and writes it into the ring buffer.
+3. The main loop reads from the ring buffer and passes each byte to the character processor.
+4. Characters are accumulated into a line buffer until Enter is received.
+5. The completed line is parsed into a command and argument, then dispatched to the matching handler.
+6. The handler executes (toggling the LED, reporting uptime, changing baud rate, etc.) and sends a response back over USART1 TX.
+
+---
+
+## Hardware Design
+
+**STM32F446RE Nucleo**
+
+- ARM Cortex-M4 core at 180 MHz
+- On-board ST-LINK/V2-1 debugger, no external programmer required
+- Generous GPIO and peripheral set, well-documented
+
+---
+
+**CP2102 USB-to-UART Adapter**
+
+- Bridges USART1 (PA9/PA10) to a PC serial terminal
+- 3.3V TTL logic levels, directly compatible with the Nucleo's GPIO
+
+---
+
+**USB Logic Analyzer (FX2LP-based, 8-channel, 24MHz)**
+
+- Used to capture and decode the raw UART waveform on PA9
+- Verified frame structure (start bit, 8 data bits, stop bit) against the PulseView UART protocol decoder
+
+Physical wiring between the Nucleo board, CP2102 adapter, and logic analyzer probes on PA9/PA10/GND can be seen in the project cover image at the top of the page.
+
+---
+
+## Firmware Architecture
+
+The firmware executes the following sequence:
+
+![Bare-Metal UART CLI Firmware Architecture](/images/projects/07_BareMetalUART/FirmwareArchitectureDiagram.png)
+
+*Figure 2. Firmware architecture showing peripheral initialization, the ISR/ring-buffer pipeline, and the CLI dispatch flow.*
+
+**Peripheral Initialization**
+
+USART1, GPIOA (LED + UART pins), and SysTick are each configured directly through their respective registers:
+
+- RCC clock gating for GPIOA and USART1
+- GPIOA MODER/AFR configuration to route PA9/PA10 to USART1 (AF7)
+- BRR calculation from the APB2 clock for the target baud rate
+- SysTick configured via `SysTick_Config()` for a 1ms system tick
+
+**Interrupt-Driven Receive**
+
+RX is handled entirely through interrupts rather than polling, since incoming bytes arrive asynchronously and the hardware only buffers one byte at a time:
+
+- `USART_CR1_RXNEIE` enables the RX-not-empty interrupt
+- `NVIC_EnableIRQ(USART1_IRQn)` routes the signal to the core's interrupt controller
+- `USART1_IRQHandler()` reads the byte and writes it into a `volatile` ring buffer
+
+**Command-Line Interface**
+
+A line-buffering layer accumulates characters and a parser splits each completed line into a command and an optional argument:
+
+```text
+help          → lists available commands
+led on / off  → controls the onboard LED via GPIOA BSRR
+status        → reports system uptime via the SysTick counter
+baud <rate>   → reconfigures USART1's BRR at runtime
+```
+
+**Baud Rate Switching**
+
+Changing the baud rate mid-session required correctly sequencing the register write against the hardware's actual transmission state — not just whether the data register was empty, but whether the entire byte (including the stop bit) had finished shifting out:
+
+```text
+1. Validate the argument is numeric and within a supported range
+2. Send a confirmation message at the CURRENT baud rate
+3. Poll the Transmission Complete (TC) flag — not TX Empty (TXE) —
+   to confirm the message has fully left the shift register
+4. Recalculate and write the new BRR value
+```
+
+---
+
+## Logic Analyzer Verification
+
+Rather than relying solely on terminal output, the UART signal was captured and decoded directly off the wire to confirm correct framing at the bit level.
+
+![Decoded UART Frame at 57600, 38400, and 115200 Baud](/images/projects/07_BareMetalUART/BaudsDemo.jpg)
+
+*Figure 3. PulseView capture of a single transmitted byte on PA9 at three different baud rates, with the UART protocol decoders annotating what they perceive as the start bits, 8 data bits, and stop bits.*
+
+The PulseView capture above shows a decoded transmission of the utf8 character 'h' at 3 different baud rates. 
+
+> **Correct Rate (57600):** 'h' is read as 0x68 corresponding to 'h' in utf8 ascii  
+> **Too Low (38400):** 'h' is read as 0xE8 which does not exist in utf8 ascii  
+> **Too High (115200):** 'h' is read as 0x80 and 0x9E which are not valid characters in utf8 ascii, as they are considered continuation bytes  
+
+---
+
+## Problems Faced
+
+**Null-Terminator Corruption in Echo Output**
+
+Early in development, echoing a single received character using `uart_send_string(&c)` produced visible garbage characters in the terminal between each typed character. The root cause was passing a pointer to a single `char` to a function expecting a null-terminated string — `uart_send_string` continued reading past the single character into adjacent memory. Switching to a dedicated `uart_send_byte()` call for single characters resolved it.
+
+---
+
+**Backspace Key Mismatch**
+
+The CLI's backspace handling initially checked only for the `\b` (0x08) control character, but PuTTY by default transmits `127` (DEL) when Backspace is pressed. This caused backspace presses to silently fall through to the "append character" branch instead of deleting. The fix was to explicitly check for both `\b` and `127` in the character processor, since terminal behavior isn't guaranteed to be consistent across clients.
+
+---
+
+**Stale Buffer Data After Backspacing**
+
+After implementing backspace, typing a long command, deleting part of it, and entering a shorter command sometimes parsed incorrectly. The line buffer's index was being decremented on backspace, but the underlying character at that position was never cleared — leaving old data in the buffer that could bleed into a subsequent shorter command. Explicitly null-terminating at the new index on every backspace resolved it.
+
+---
+
+**TXE vs. TC**
+
+When implementing runtime baud rate switching, the first version changed `USART1->BRR` immediately after calling `uart_send_string()`. This occasionally corrupted the final byte of the confirmation message. The issue was that TXE (TX Empty) only indicates the data register is ready for a new byte — not that the previous byte has fully finished shifting out over the wire, stop bit included. Switching the check to the TC (Transmission Complete) flag ensured the baud rate change only occurred once the line was fully idle.
+
+---
+
+## Results
+
+The project validated a complete, hand-built UART subsystem and demonstrated that a meaningful firmware architecture — interrupts, buffering, command parsing, and runtime reconfiguration — can be built entirely from register-level access with no abstraction layer.
+
+The completed prototype successfully demonstrated:
+
+- Correct USART1 transmission and reception verified at both the terminal and electrical signal level
+- Interrupt-driven I/O with no data loss under normal typing speeds
+- A working multi-command CLI with input validation
+- Safe runtime baud rate switching without corrupting in-flight data
+- Independent debugging of several non-obvious hardware/software interaction bugs
+
+---
+
+## Skills Demonstrated
+
+**Embedded Systems**
+
+- Bare-Metal STM32 Firmware Development
+- Register-Level Peripheral Configuration
+- Interrupt-Driven I/O
+- ARM Cortex-M4 (NVIC, SysTick)
+- Embedded C
+
+**Hardware**
+
+- UART/Serial Communication
+- Logic Analyzer Signal Verification
+- Hardware Debugging
+- GPIO Configuration
+
+**Software Development**
+
+- Data Structures (Ring Buffer / Circular Queue)
+- Command Parsing
+- Input Validation
+- Defensive Programming
+
+**Engineering**
+
+- Reference Manual Navigation (RM0390)
+- Root-Cause Debugging
+- Timing-Sensitive System Design
+
+---
+
+## Future Improvements
+
+If the project were continued beyond the prototype stage, the next steps would include:
+
+**Firmware Robustness**
+
+- Interrupt-driven TX to eliminate blocking sends for longer messages
+- Ring buffer overflow detection and reporting
+- A `reset` command to safely re-initialize peripherals without a full power cycle
+
+**Extended CLI Functionality**
+
+- Additional commands (e.g., reading ADC channels, reporting clock configuration)
+- Persistent command history (up-arrow recall)
+- A `clear` command to clear the console window
+- An `echo off` mode for scripted/automated serial interaction
+
+**Portability**
+
+- Abstracting the register-level driver behind a thin hardware interface layer to make it portable to other STM32F4-family chips
+- Migrating the bare-metal USART driver to the STM32MP157D-DK1's M4 core (I already have one) as a follow-up project
+
+---
+
+## Takeaways
+
+This project provided a ground-up understanding of how a UART peripheral actually works — not through an abstraction layer, but through direct register manipulation, reference manual navigation, and signal-level verification with a logic analyzer.
+
+It also reinforced that real firmware bugs are rarely about "the code being wrong" in an obvious sense — they're about subtle distinctions like TXE vs. TC, or one terminal sending a different control character than expected. Tracking down and explaining those bugs ended up being as valuable to the learning process as building the working features themselves.
